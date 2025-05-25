@@ -1,4 +1,4 @@
-# TTMATRIX toolkit
+# TTMATRIX 
 Toolkit for computing simple public transit travel time matrices
 (c) Gabriel M. Ahlfeldt, version 0.1.0., 2025-05
 
