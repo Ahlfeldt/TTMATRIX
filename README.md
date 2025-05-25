@@ -25,6 +25,20 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. 
 
+# === USER SETTINGS ===
+Folder | File  | Description |
+|:------------------------|:-----------------------|
+working_dir = r"A:\Research\TTMATRIX-toolkit" | Set your working directory by replacing `A:\Research\TTMATRIX-toolkit` with the correct path |          
+points_file = "B4m_com_ll.shp"
+stations_file = "UBahn2020_stops_ll.shp"
+network_file = "UBahn2020_lines_ll.shp"
+point_id_field = "STAT_BLOCK"
+walking_speed_kmh = 4
+network_speed_kmh = 35
+output_matrix_file = "TTMATRIX-final.csv"
+output_shapefile = "ATT-final.shp"
+
+
 ## Example Output
 
 ![Example Map](example_map.png) <!-- Optional: Replace with your own example image -->
