@@ -3,21 +3,21 @@ import subprocess
 import sys
 
 # === USER SETTINGS ===
-working_dir = r"A:\Research\TTMATRIX-toolkit"  # Select your working directory here
-points_file = "B4m_com_ll.shp"                 # Select the point shapefile containing locations here (origins/destinations)
-stations_file = "UBahn2020_stops_ll.shp"       # Select the point shapefile containing stations to enter and exit the network here
-network_file = "UBahn2020_lines_ll.shp"        # Select the polyline shapefile containing network here
-point_id_field = "STAT_BLOCK"                  # Select the identifier variable in your location shapefile here
-walking_speed_kmh = 4                          # Select the speed off the network (e.g. walking) here
-network_speed_kmh = 35                         # Select the speed on the network (e.g. subways) here
-output_matrix_file = "TTMATRIX-final.csv"      # Select the name of the outcome travel time matrix here
-output_shapefile = "ATT-final.shp"             # Select the name of the outcome shapefile with average travel times here
+working_dir = r"A:\Research\TTMATRIX-toolkit"  # Set your working directory
+points_file = "B4m_com_ll.shp"                 # Point shapefile (origins/destinations)
+stations_file = "UBahn2020_stops_ll.shp"       # Station shapefile (entry/exit points)
+network_file = "UBahn2020_lines_ll.shp"        # Network polyline shapefile
+point_id_field = "STAT_BLOCK"                  # Identifier field in point shapefile
+walking_speed_kmh = 4                          # Walking speed (km/h)
+network_speed_kmh = 35                         # Network speed (km/h)
+output_matrix_file = "TTMATRIX-final.csv"      # Output travel time matrix CSV
+output_shapefile = "ATT-final.shp"             # Output shapefile with average travel times
 
 # === PACKAGE INSTALLATION ===
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-for pkg in ["geopandas", "shapely", "tqdm", "matplotlib", "networkx", "pandas", "numpy", "pyproj"]:
+for pkg in ["geopandas", "shapely", "tqdm", "matplotlib", "networkx", "pandas", "numpy", "pyproj", "scipy"]:
     try:
         __import__(pkg)
     except ImportError:
@@ -32,6 +32,7 @@ import networkx as nx
 import pandas as pd
 import numpy as np
 from pyproj import CRS
+from scipy.spatial import cKDTree
 
 # === SET PATHS ===
 input_dir = os.path.join(working_dir, "input")
@@ -44,10 +45,8 @@ network_path = os.path.join(input_dir, network_file)
 
 # === LOAD DATA ===
 points = gpd.read_file(points_path)
-
-# === LIMIT TO FIRST 500 POINTS FOR DEBUGGING ===
-# max_points = 500
-# points = points.iloc[:max_points].copy()
+# === OPTIONAL: LIMIT TO FIRST 1000 POINTS FOR DEBUGGING ===
+# points = points.iloc[:1000].copy()
 
 stations = gpd.read_file(stations_path)
 network = gpd.read_file(network_path)
@@ -61,7 +60,7 @@ if not points.crs.is_projected:
     print(f"Input CRS: {points.crs}")
     print("Points file is in geographic coordinates. Reprojecting to a local UTM CRS...")
 
-    centroid = points.geometry.union_all().centroid
+    centroid = points.geometry.unary_union.centroid
 
     # Compute UTM zone manually
     zone_number = int((centroid.x + 180) / 6) + 1
@@ -106,41 +105,45 @@ print("Connecting stations to nearest transit network node...")
 
 network_nodes = [n for n in G_aug.nodes if isinstance(n, tuple)]
 network_node_points = [Point(n) for n in network_nodes]
-
-def get_nearest_network_node(station_geom):
-    distances = [station_geom.distance(pt) for pt in network_node_points]
-    return network_nodes[np.argmin(distances)]
+network_kdtree = cKDTree(np.array([[pt.x, pt.y] for pt in network_node_points]))
 
 for idx, row in tqdm(stations.iterrows(), total=len(stations), desc="Snapping stations"):
     station_name = f"station_{idx}"
-    nearest_node = get_nearest_network_node(row.geometry)
+    station_coord = np.array([row.geometry.x, row.geometry.y])
+    _, nearest_idx = network_kdtree.query(station_coord, k=1)
+    nearest_node = network_nodes[nearest_idx]
     G_aug.add_edge(station_name, nearest_node, weight=0.0001)
 
 # Add point nodes
 for idx, row in points.iterrows():
     G_aug.add_node(f"point_{idx}", geometry=row.geometry)
 
-# Add access edges from each point to each station
-for i, point in tqdm(points.iterrows(), total=len(points), desc="Access edges → graph"):
+# === CONNECT POINTS TO NEAREST STATIONS ===
+print("Adding walking edges from points to their 3 nearest stations...")
+
+station_coords = np.array([[geom.x, geom.y] for geom in stations.geometry])
+station_kdtree = cKDTree(station_coords)
+
+point_coords = np.array([[geom.x, geom.y] for geom in points.geometry])
+
+for i in tqdm(range(len(points)), desc="Point-to-station edges"):
+    distances, indices = station_kdtree.query(point_coords[i], k=3)
     p_node = f"point_{i}"
-    for j, station in stations.iterrows():
+    for dist_m, j in zip(distances, indices):
         s_node = f"station_{j}"
-        dist = point.geometry.distance(station.geometry)
-        time = (dist / 1000) / walking_speed_kmh * 60
-        G_aug.add_edge(p_node, s_node, weight=time)
+        time_min = (dist_m / 1000) / walking_speed_kmh * 60
+        G_aug.add_edge(p_node, s_node, weight=time_min)
 
-# === ADD WALKING EDGES BETWEEN ALL POINTS ===
-print("Adding walking edges between all points...")
+# === ADD WALKING EDGES TO NEAREST NEIGHBORS ONLY ===
+print("Adding walking edges to 5 nearest neighbors per point...")
 
-for i, point_i in tqdm(points.iterrows(), total=len(points), desc="Point-to-point edges"):
+point_kdtree = cKDTree(point_coords)
+
+for i in tqdm(range(len(points)), desc="Point-to-point nearest neighbors"):
+    distances, neighbors = point_kdtree.query(point_coords[i], k=6)  # k=6 to include self
     p_node_i = f"point_{i}"
-    geom_i = point_i.geometry
-    for j, point_j in points.iterrows():
-        if i >= j:
-            continue
-        p_node_j = f"point_{j}"
-        geom_j = point_j.geometry
-        distance_m = geom_i.distance(geom_j)
+    for neighbor_idx, distance_m in zip(neighbors[1:], distances[1:]):  # skip self
+        p_node_j = f"point_{neighbor_idx}"
         time_min = (distance_m / 1000) / walking_speed_kmh * 60
         G_aug.add_edge(p_node_i, p_node_j, weight=time_min)
 
