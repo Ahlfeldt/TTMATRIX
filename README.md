@@ -26,7 +26,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder *Input* containing the three input shapefiles and a subfolder *Outputs* where the outputs will be saved.
 
 All revelant parameters can be specified 
-<details>
+```python
 # === USER SETTINGS ===
 working_dir = r"A:\Research\TTMATRIX-toolkit"  # Select your working directory here
 points_file = "B4m_com_ll.shp"                 # Select the point shapefile containing locations here (origins/destinations)
@@ -37,7 +37,7 @@ walking_speed_kmh = 4                          # Select the speed off the networ
 network_speed_kmh = 35                         # Select the speed on the network (e.g. subways) here
 output_matrix_file = "TTMATRIX-final.csv"      # Select the name of the outcome travel time matrix here
 output_shapefile = "ATT-final.shp"             # Select the name of the outcome shapefile with average travel times here
-</details>
+```
 
 ## Example Output
 
