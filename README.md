@@ -1,5 +1,6 @@
-# TTMATRIX
+# TTMATRIX 
 Toolkit for computing simple public transit travel time matrices
+
 (c) Gabriel M. Ahlfeldt, version 0.1.0., 2025-05
 
 # About
@@ -23,7 +24,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 ## Getting Started
 
-See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. The input shapefiles can use projectsion in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
+If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment) is an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. The input shapefiles can use projectsion in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
 
 You can specify all relevant parameters in the below part of the code. There is no need to make any adjustments elsewhere.
 
