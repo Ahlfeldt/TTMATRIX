@@ -23,11 +23,50 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 ## Getting Started
 
-See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing.
+See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. 
 
 ## Example Output
 
 ![Example Map](example_map.png) <!-- Optional: Replace with your own example image -->
+
+## Methodology: Routing and Graph Construction
+
+The travel time matrix is computed by constructing an **augmented graph** that combines the **public transport network** with **walking access**. The graph is undirected and weighted by travel times in minutes. The following nodes and edges are included:
+
+### 1. Transit Network Edges
+- Each transit line (e.g., a subway line) is decomposed into segments between consecutive coordinates.
+- Each segment becomes an edge with a weight equal to the travel time:
+time = (segment length in km) / (network speed in km/h) × 60
+
+### 2. Station Nodes and Snapping Edges
+- Each public transport station is added as a node.
+- Each station is connected to its **nearest point** on the network via a **nearly zero-cost edge** (~0.0001 minutes) to allow entry and exit from the network.
+
+### 3. Point Nodes and Access Edges
+- Each point to be included in the travel time matrix is added as a node.
+- Each point is connected to **every station** by a walking edge, weighted by:
+time = (Euclidean distance in km) / (walking speed in km/h) × 60
+
+
+- This design allows the algorithm to determine the most efficient **entry and exit** stations for each journey — not just the nearest ones.
+
+### 4. Direct Walking Edges Between Points
+- To allow for walking-only trips, a walking edge is also added between every unique pair of points.
+- These are calculated the same way using walking speed and straight-line distance.
+
+### 5. Shortest Path Computation
+- The resulting graph allows both multimodal and walking-only routes.
+- For each origin point, the shortest paths to all other points are computed using **Dijkstra’s algorithm**, weighted by travel time.
+- The final travel time between any two points reflects the **least-cost route**, whether via transit or direct walking.
+
+### Output
+- A complete origin-destination travel time matrix (`.csv`)
+- A shapefile enriched with each point’s **mean travel time**
+- An optional map visualization of accessibility patterns
+
+
+
+
 
 ---
 
