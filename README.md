@@ -26,7 +26,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder *Input* containing the three input shapefiles and a subfolder *Outputs* where the outputs will be saved.
 
 # === USER SETTINGS ===
-Folder | File  | Description |
+Folder | File  | 
 |:------------------------|:-----------------------|
 | working_dir = r"A:\Research\TTMATRIX-toolkit" | Set your working directory by replacing `A:\Research\TTMATRIX-toolkit` with the correct path |          
 points_file = "B4m_com_ll.shp"
