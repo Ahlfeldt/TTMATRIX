@@ -40,6 +40,19 @@ output_matrix_file = "TTMATRIX-final.csv"      # Select the name of the outcome 
 output_shapefile = "ATT-final.shp"             # Select the name of the outcome shapefile with average travel times here
 ```
 
+## Content
+
+Folder | File  | Description |
+|:------------------------|:-----------------------|:----------------------------------------------------------------------------------|
+| output_data | `clusters.csv` | CSV file containing information on the final delineated clusters, including geographic coordinates in decimal degrees, a cluster id that corresponds to the rank in the distribution of total mass within the cluster (in our case employment), the number of cells within the cluster, the total area of the cluster (in square meters). You may choose another file name in the 'Example.py' script. |
+| output_data | `grid_clusters.csv` | CSV file containing a gridded version of the data set, including groups of clustered grid cells identified by the cluster id, geographic coordinates in decimal degrees, and the total mass in the grid cell (in our case employment). You may choose another file name in the 'Example.py' script.   |
+| output_data | `pts_df_w_clusters.csv` | CSV file containing the plants with the input data and, in addition, an identifier for the cluster to which a plant belongs. You may choose another file name in the 'Example.py' script. |
+| output_gis | `grid_clusters.*` | Shapefile of the gridded data set including the same information as in  `grid_clusters.csv`. You may choose another file name in the 'Example.py' script. |
+| output_gis | `clusters.*` | Shapefile of final output, i.e. aggregated clusters (in our case prime locations) along with the same information as in 'clusters.csv'. You may choose another file name in the 'Example.py' script.  |
+| output_maps | `clusters_employment_750m_995th.png` | Map showing the boundaries of the final output, i.e. clusters after aggregation (in our case to prime locations), with the density of the selected importance weight (in our case employment) in the background. You may choose another file name in the 'Example.py' script.  |
+| output_maps | `employment_cluster_pts.png` | Map showing the plants and how clustered they are. You may choose another file name in the 'Example.py' script.  |
+| output_maps | `rand_dist_employment.png` | Technical output to inform the choice of the p-value. You may choose another file name in the 'Example.py' script.  |
+
 
 ## Methodology: Routing and Graph Construction
 
