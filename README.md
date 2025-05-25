@@ -28,7 +28,7 @@ See the script `TTMATRIX.py` for usage. All dependencies are installed automatic
 # === USER SETTINGS ===
 Folder | File  | Description |
 |:------------------------|:-----------------------|
-working_dir = r"A:\Research\TTMATRIX-toolkit" | Set your working directory by replacing `A:\Research\TTMATRIX-toolkit` with the correct path |          
+| working_dir = r"A:\Research\TTMATRIX-toolkit" | Set your working directory by replacing `A:\Research\TTMATRIX-toolkit` with the correct path |          
 points_file = "B4m_com_ll.shp"
 stations_file = "UBahn2020_stops_ll.shp"
 network_file = "UBahn2020_lines_ll.shp"
