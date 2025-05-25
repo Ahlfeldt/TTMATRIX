@@ -68,14 +68,14 @@ time = (segment length in km) / (network speed in km/h) × 60
 
 ### 3. Point Nodes and Access Edges
 - Each point to be included in the travel time matrix is added as a node.
-- Each point is connected to **every station** by a walking edge, weighted by:
+- Each point is connected to the **three nearest stations** by a walking edge, weighted by:
 time = (Euclidean distance in km) / (walking speed in km/h) × 60
 
 
 - This design allows the algorithm to determine the most efficient **entry and exit** stations for each journey — not just the nearest ones.
 
 ### 4. Direct Walking Edges Between Points
-- To allow for walking-only trips, a walking edge is also added between every unique pair of points.
+- To allow for walking-only trips, a walking edge is also added between any point and its **five nearest neighbors**.
 - These are calculated the same way using walking speed and straight-line distance.
 
 ### 5. Shortest Path Computation
