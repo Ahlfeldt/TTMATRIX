@@ -23,7 +23,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 ## Getting Started
 
-See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. 
+See the script `TTMATRIX.py` for usage. All dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder *Input* containing the three input shapefiles and a subfolder *Outputs* where the outputs will be saved.
 
 # === USER SETTINGS ===
 Folder | File  | Description |
