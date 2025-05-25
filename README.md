@@ -40,9 +40,6 @@ output_matrix_file = "TTMATRIX-final.csv"      # Select the name of the outcome 
 output_shapefile = "ATT-final.shp"             # Select the name of the outcome shapefile with average travel times here
 ```
 
-## Example Output
-
-![Example Map](example_map.png) <!-- Optional: Replace with your own example image -->
 
 ## Methodology: Routing and Graph Construction
 
