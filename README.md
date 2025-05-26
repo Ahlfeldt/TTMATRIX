@@ -16,7 +16,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 - **Customizable speeds**: Choose walking and transit speeds (e.g. 4 km/h and 35 km/h).
 - **Smart routing**: Computes least-time routes for all origin-destination pairs, using the network **only if faster** than walking.
 - **Flexible station choice**: No fixed assignment to nearest station — the toolkit chooses the most time-efficient entry and exit.
-- **Automatic snapping and connections**: Stations are snapped to the network, and all points are connected to all stations automatically.
+- **Automatic snapping and connections**: Stations are snapped to the network, endpoints of network segments are snapped to each other, and all points are connected to nearest stations automatically.
 - **Output**: 
   - Travel time matrix (`.csv`) where travel times are measured in minutes
   - Enriched shapefile with mean travel times per point
@@ -30,15 +30,17 @@ You can specify all relevant parameters in the below part of the code. There is 
 
 ```python
 # === USER SETTINGS ===
-working_dir = r"A:\Research\TTMATRIX-toolkit"  # Select your working directory here
-points_file = "B4m_com_ll.shp"                 # Select the point shapefile containing locations here (origins/destinations)
-stations_file = "UBahn2020_stops_ll.shp"       # Select the point shapefile containing stations to enter and exit the network here
-network_file = "UBahn2020_lines_ll.shp"        # Select the polyline shapefile containing network here
-point_id_field = "STAT_BLOCK"                  # Select the identifier variable in your location shapefile here
-walking_speed_kmh = 4                          # Select the speed off the network (e.g. walking) here
-network_speed_kmh = 35                         # Select the speed on the network (e.g. subways) here
-output_matrix_file = "TTMATRIX-final.csv"      # Select the name of the outcome travel time matrix here
-output_shapefile = "ATT-final.shp"             # Select the name of the outcome shapefile with average travel times here
+working_dir = r"H:\Research\TTMATRIX-toolkit"         # Set your working directory
+points_file = "B4m_com_ll.shp"                        # Point shapefile (origins/destinations)
+stations_file = "UBahn2020_stops_ll.shp"       # Station shapefile (entry/exit points)
+network_file = "UBahn2020_lines_ll.shp"        # Network polyline shapefile
+point_id_field = "STAT_BLOCK"                         # Identifier field in point shapefile
+walking_speed_kmh = 4                                 # Walking speed (km/h)
+network_speed_kmh = 35                                # Network speed (km/h)
+snap_tolerance_m = 1.0                                # Tolerance for snapping network segment endpoints (meters)
+output_matrix_file = "TTMATRIX-final.csv"           # Output travel time matrix CSV
+output_shapefile = "ATT-final.shp"                  # Output shapefile with average travel times
+output_edges_shapefile = "graph_edges-final.shp"    # Output shapefile showing the graph (network + walking) used in Dijkstra
 ```
 
 ## Content
