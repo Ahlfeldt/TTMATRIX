@@ -98,7 +98,7 @@ time = (Euclidean distance in km) / (walking speed in km/h) × 60
 
 ### Illustration
 
-The graph below illustrates how the toolkit establishes connectivity. The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route is found through the combined network created by the thick red lines and the thin grey lines.
+The graph below illustrates how the toolkit establishes connectivity. The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
 
 ![Graph Illustration](Graph-Illustration.png)
 
