@@ -16,7 +16,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 - **Customizable speeds**: Choose walking and transit speeds (e.g. 4 km/h and 35 km/h).
 - **Smart routing**: Computes least-time routes for all origin-destination pairs, using the network **only if faster** than walking.
 - **Flexible station choice**: No fixed assignment to nearest station — the toolkit chooses the most time-efficient entry and exit.
-- **Automatic snapping and connections**: Stations are snapped to the network, and all points are connected to all stations automatically.
+- **Automatic snapping and connections**: Stations are snapped to the network, endpoints of network segments are snapped to each other, and all points are connected to nearest stations automatically.
 - **Output**: 
   - Travel time matrix (`.csv`) where travel times are measured in minutes
   - Enriched shapefile with mean travel times per point
