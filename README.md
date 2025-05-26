@@ -24,7 +24,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 ## Getting Started
 
-If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment) is an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. The input shapefiles can use projectsion in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
+If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment), an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must contain a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. The input shapefiles can use projectsion in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
 
 You can specify all relevant parameters in the below part of the code. There is no need to make any adjustments elsewhere.
 
@@ -68,14 +68,14 @@ time = (segment length in km) / (network speed in km/h) × 60
 
 ### 3. Point Nodes and Access Edges
 - Each point to be included in the travel time matrix is added as a node.
-- Each point is connected to **every station** by a walking edge, weighted by:
+- Each point is connected to the **three nearest stations** by a walking edge, weighted by:
 time = (Euclidean distance in km) / (walking speed in km/h) × 60
 
 
 - This design allows the algorithm to determine the most efficient **entry and exit** stations for each journey — not just the nearest ones.
 
 ### 4. Direct Walking Edges Between Points
-- To allow for walking-only trips, a walking edge is also added between every unique pair of points.
+- To allow for walking-only trips, a walking edge is also added between any point and its **five nearest neighbors**.
 - These are calculated the same way using walking speed and straight-line distance.
 
 ### 5. Shortest Path Computation
