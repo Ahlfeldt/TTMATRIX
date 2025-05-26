@@ -3,15 +3,17 @@ import subprocess
 import sys
 
 # === USER SETTINGS ===
-working_dir = r"A:\Research\TTMATRIX-toolkit"  # Set your working directory
-points_file = "B4m_com_ll.shp"                 # Point shapefile (origins/destinations)
-stations_file = "UBahn2020_stops_ll.shp"       # Station shapefile (entry/exit points)
-network_file = "UBahn2020_lines_ll.shp"        # Network polyline shapefile
-point_id_field = "STAT_BLOCK"                  # Identifier field in point shapefile
-walking_speed_kmh = 4                          # Walking speed (km/h)
-network_speed_kmh = 35                         # Network speed (km/h)
-output_matrix_file = "TTMATRIX-final.csv"      # Output travel time matrix CSV
-output_shapefile = "ATT-final.shp"             # Output shapefile with average travel times
+working_dir = r"H:\Research\TTMATRIX-toolkit"       # Set your working directory
+points_file = "B4m_com_ll.shp"                      # Point shapefile (origins/destinations)
+stations_file = "UBahn2020noU5ext_stops_ll.shp"            # Station shapefile (entry/exit points)
+network_file = "UBahn2020noU5ext_lines_ll.shp"             # Network polyline shapefile
+point_id_field = "STAT_BLOCK"                       # Identifier field in point shapefile
+walking_speed_kmh = 4                               # Walking speed (km/h)
+network_speed_kmh = 35                              # Network speed (km/h)
+snap_tolerance_m = 1.0                              # Tolerance for snapping network segment endpoints (meters)
+output_matrix_file = "TTMATRIX-noU5ext.csv"           # Output travel time matrix CSV
+output_shapefile = "ATT-noU5ext.shp"                  # Output shapefile with average travel times
+output_edges_shapefile = "graph_edges-noU5ext.shp"    # Output shapefile showing the graph (network + walking) used in Dijkstra
 
 # === PACKAGE INSTALLATION ===
 def install(package):
@@ -47,7 +49,6 @@ network_path = os.path.join(input_dir, network_file)
 points = gpd.read_file(points_path)
 # === OPTIONAL: LIMIT TO FIRST 1000 POINTS FOR DEBUGGING ===
 # points = points.iloc[:1000].copy()
-
 stations = gpd.read_file(stations_path)
 network = gpd.read_file(network_path)
 
@@ -61,8 +62,6 @@ if not points.crs.is_projected:
     print("Points file is in geographic coordinates. Reprojecting to a local UTM CRS...")
 
     centroid = points.geometry.unary_union.centroid
-
-    # Compute UTM zone manually
     zone_number = int((centroid.x + 180) / 6) + 1
     is_northern = centroid.y >= 0
     epsg_code = 32600 + zone_number if is_northern else 32700 + zone_number
@@ -76,6 +75,47 @@ if not points.crs.is_projected:
 else:
     stations = stations.to_crs(points.crs)
     network = network.to_crs(points.crs)
+
+# === SNAP NEARBY ENDPOINTS IN NETWORK ===
+if snap_tolerance_m > 0:
+    print(f"Snapping nearby network segment endpoints within {snap_tolerance_m} meter(s)...")
+
+    endpoints = []
+    for geom in network.geometry:
+        coords = list(geom.coords)
+        if len(coords) >= 2:
+            endpoints.append(Point(coords[0]))
+            endpoints.append(Point(coords[-1]))
+
+    endpoint_coords = np.array([[pt.x, pt.y] for pt in endpoints])
+    endpoint_kdtree = cKDTree(endpoint_coords)
+    snapped_coords = endpoint_coords.copy()
+    visited = set()
+
+    for i in range(len(endpoint_coords)):
+        if i in visited:
+            continue
+        idxs = endpoint_kdtree.query_ball_point(endpoint_coords[i], r=snap_tolerance_m)
+        if len(idxs) > 1:
+            visited.update(idxs)
+            cluster_pts = endpoint_coords[idxs]
+            centroid = cluster_pts.mean(axis=0)
+            for idx in idxs:
+                snapped_coords[idx] = centroid
+
+    coord_map = {tuple(pt): tuple(snapped_coords[i]) for i, pt in enumerate(endpoint_coords)}
+
+    def snap_coords(coords):
+        return [coord_map.get(tuple(c), c) for c in coords]
+
+    snapped_geoms = []
+    for geom in network.geometry:
+        coords = list(geom.coords)
+        new_coords = snap_coords(coords)
+        snapped_geoms.append(LineString(new_coords))
+
+    network["geometry"] = snapped_geoms
+    print("Finished snapping network endpoints.")
 
 # === CENTROID CONVERSION IF NEEDED ===
 if points.geom_type.isin(["Polygon", "MultiPolygon"]).any():
@@ -180,6 +220,30 @@ points["mean_time_min"] = pd.to_numeric(mean_travel_times.values, errors='coerce
 points_out_path = os.path.join(output_dir, output_shapefile)
 points.to_file(points_out_path)
 print(f"Saved enriched points with mean travel times to: {points_out_path}")
+
+# === EXPORT ALL GRAPH EDGES AS SHAPEFILE (INCLUDING POINT & STATION LINKS) ===
+print("Exporting full graph edges (network + walking) as shapefile...")
+
+edge_records = []
+
+for u, v, data in G_aug.edges(data=True):
+    try:
+        geom_u = Point(u) if isinstance(u, tuple) else G_aug.nodes[u]["geometry"]
+        geom_v = Point(v) if isinstance(v, tuple) else G_aug.nodes[v]["geometry"]
+        line = LineString([geom_u, geom_v])
+        edge_records.append({
+            "from_node": str(u),
+            "to_node": str(v),
+            "time_min": data["weight"],
+            "geometry": line
+        })
+    except Exception as e:
+        print(f"Skipped edge ({u}, {v}): {e}")
+
+edges_gdf = gpd.GeoDataFrame(edge_records, crs=points.crs)
+edges_out_path = os.path.join(output_dir, output_edges_shapefile)
+edges_gdf.to_file(edges_out_path)
+print(f"Saved graph edges to: {edges_out_path}")
 
 # === PLOT MEAN TRAVEL TIME MAP ===
 fig, ax = plt.subplots(figsize=(10, 10))
