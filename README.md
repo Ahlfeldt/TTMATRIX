@@ -24,7 +24,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 ## Getting Started
 
-If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment), an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must contain a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. The input shapefiles can use projectsion in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
+If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment), an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must contain a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. 
 
 You can specify all relevant parameters in the below part of the code. There is no need to make any adjustments elsewhere.
 
@@ -42,6 +42,12 @@ output_matrix_file = "TTMATRIX-final.csv"           # Output travel time matrix 
 output_shapefile = "ATT-final.shp"                  # Output shapefile with average travel times
 output_edges_shapefile = "graph_edges-final.shp"    # Output shapefile showing the graph (network + walking) used in Dijkstra
 ```
+
+### Things to note
+
+- The input shapefiles can use projection in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
+- The algorithm does not distinguish between lines on a network. It is assumed that riders can enter and exit the network at any station. If lines are not split at stations this will be done by the algorithm.
+- If two lines cross without being split and snapped at a node, the algorithm will only allow for a change of line if the lines cross at a station. In this case, the algorithm will split and snap the lines. If the cross elsewhere (without split and snap), the algorithm will assume that a change of line is unintended.
 
 ## Content
 
