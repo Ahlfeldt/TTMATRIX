@@ -90,6 +90,7 @@ time = (Euclidean distance in km) / (walking speed in km/h) × 60
 - A shapefile enriched with each point’s **mean travel time**
 - An optional map visualization of accessibility patterns
 
+![Graph Illustration](Graph-Illustration.png)
 
 
 
