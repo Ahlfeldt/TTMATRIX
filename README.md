@@ -30,14 +30,14 @@ You can specify all relevant parameters in the below part of the code. There is 
 
 ```python
 # === USER SETTINGS ===
-working_dir = r"H:\Research\TTMATRIX-toolkit"         # Set your working directory
-points_file = "B4m_com_ll.shp"                        # Point shapefile (origins/destinations)
-stations_file = "UBahn2020_stops_ll.shp"       # Station shapefile (entry/exit points)
-network_file = "UBahn2020_lines_ll.shp"        # Network polyline shapefile
-point_id_field = "STAT_BLOCK"                         # Identifier field in point shapefile
-walking_speed_kmh = 4                                 # Walking speed (km/h)
-network_speed_kmh = 35                                # Network speed (km/h)
-snap_tolerance_m = 1.0                                # Tolerance for snapping network segment endpoints (meters)
+working_dir = r"H:\Research\TTMATRIX-toolkit"       # Set your working directory
+points_file = "B4m_com_ll.shp"                      # Point shapefile (origins/destinations)
+stations_file = "UBahn2020_stops_ll.shp"            # Station shapefile (entry/exit points)
+network_file = "UBahn2020_lines_ll.shp"             # Network polyline shapefile
+point_id_field = "STAT_BLOCK"                       # Identifier field in point shapefile
+walking_speed_kmh = 4                               # Walking speed (km/h)
+network_speed_kmh = 35                              # Network speed (km/h)
+snap_tolerance_m = 1.0                              # Tolerance for snapping network segment endpoints (meters)
 output_matrix_file = "TTMATRIX-final.csv"           # Output travel time matrix CSV
 output_shapefile = "ATT-final.shp"                  # Output shapefile with average travel times
 output_edges_shapefile = "graph_edges-final.shp"    # Output shapefile showing the graph (network + walking) used in Dijkstra
