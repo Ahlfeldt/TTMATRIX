@@ -11,7 +11,7 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 2. **Network geometry** (e.g. highways, subway lines). and, 
 3. optionally, **public transport stations** (e.g. subway stops, highway ramps)
 
-The third input is an option since the toolkit can generate artificial entry/exit points to the network. Of course, the recommended option is to provide the input for a more realistic approximation of travel times.
+The third input is optional since the toolkit can generate artificial entry/exit points to the network. Of course, the recommended option is to provide the input for a more realistic approximation of travel times.
 
 ## Key Features
 
