@@ -5,21 +5,26 @@ import sys
 # === USER SETTINGS ===
 working_dir = r"H:\Research\TTMATRIX-toolkit"       # Set your working directory
 points_file = "B4m_com_ll.shp"                      # Point shapefile (origins/destinations)
-stations_file = "UBahn2020noU5ext_stops_ll.shp"            # Station shapefile (entry/exit points)
+stations_file = None                                # Set to None or "" to auto-generate stations
 network_file = "UBahn2020noU5ext_lines_ll.shp"             # Network polyline shapefile
 point_id_field = "STAT_BLOCK"                       # Identifier field in point shapefile
 walking_speed_kmh = 4                               # Walking speed (km/h)
 network_speed_kmh = 35                              # Network speed (km/h)
 snap_tolerance_m = 1.0                              # Tolerance for snapping network segment endpoints (meters)
-output_matrix_file = "TTMATRIX-noU5ext.csv"           # Output travel time matrix CSV
-output_shapefile = "ATT-noU5ext.shp"                  # Output shapefile with average travel times
-output_edges_shapefile = "graph_edges-noU5ext.shp"    # Output shapefile showing the graph (network + walking) used in Dijkstra
+output_matrix_file = "TTMATRIX-noU5noSt.csv"            # Output travel time matrix CSV
+output_shapefile = "ATT-noU5noSt.shp"                   # Output shapefile with average travel times
+output_edges_shapefile = "graph_edges-noU5noSt.shp"     # Output shapefile showing the graph (network + walking) used in Dijkstra
+# --- Only relevant if no station shapefile is progided ---
+cluster_eps_m = 200                                 # Max distance between points in a cluster for artificial stations (meters)
+# --- Optional for debugging ---
+debug_limit_points = None                           # Set to e.g. 1000 to limit to first N points for testing
+
 
 # === PACKAGE INSTALLATION ===
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
-for pkg in ["geopandas", "shapely", "tqdm", "matplotlib", "networkx", "pandas", "numpy", "pyproj", "scipy"]:
+for pkg in ["geopandas", "shapely", "tqdm", "matplotlib", "networkx", "pandas", "numpy", "pyproj", "scipy", "scikit-learn"]:
     try:
         __import__(pkg)
     except ImportError:
@@ -35,6 +40,8 @@ import pandas as pd
 import numpy as np
 from pyproj import CRS
 from scipy.spatial import cKDTree
+from shapely.ops import split
+from sklearn.cluster import DBSCAN
 
 # === SET PATHS ===
 input_dir = os.path.join(working_dir, "input")
@@ -42,19 +49,16 @@ output_dir = os.path.join(working_dir, "output")
 os.makedirs(output_dir, exist_ok=True)
 
 points_path = os.path.join(input_dir, points_file)
-stations_path = os.path.join(input_dir, stations_file)
+stations_path = os.path.join(input_dir, stations_file) if stations_file else None
 network_path = os.path.join(input_dir, network_file)
 
 # === LOAD DATA ===
 points = gpd.read_file(points_path)
-# === OPTIONAL: LIMIT TO FIRST 1000 POINTS FOR DEBUGGING ===
-# points = points.iloc[:1000].copy()
-stations = gpd.read_file(stations_path)
-network = gpd.read_file(network_path)
+if debug_limit_points is not None:
+    print(f"Limiting points to the first {debug_limit_points} for testing...")
+    points = points.iloc[:debug_limit_points].copy()
 
-print(f"Loaded {len(points)} points")
-print(f"Loaded {len(stations)} stations")
-print(f"Loaded {len(network)} network elements")
+network = gpd.read_file(network_path)
 
 # === CHECK & ALIGN CRS ===
 if not points.crs.is_projected:
@@ -70,11 +74,42 @@ if not points.crs.is_projected:
     print(f"Reprojecting to UTM zone {zone_number}, EPSG:{epsg_code}")
 
     points = points.to_crs(best_utm_crs)
-    stations = stations.to_crs(best_utm_crs)
     network = network.to_crs(best_utm_crs)
 else:
-    stations = stations.to_crs(points.crs)
     network = network.to_crs(points.crs)
+
+# === HANDLE STATIONS: load or generate ===
+def generate_artificial_stations(points, network, eps=200):
+    print("No station shapefile found. Generating artificial stations using DBSCAN clustering...")
+
+    coords = np.array([[geom.x, geom.y] for geom in points.geometry])
+    clustering = DBSCAN(eps=eps, min_samples=1).fit(coords)
+    labels = clustering.labels_
+    centroids = []
+
+    for label in np.unique(labels):
+        cluster_coords = coords[labels == label]
+        centroid_xy = cluster_coords.mean(axis=0)
+        centroid_point = Point(centroid_xy)
+
+        distances = network.geometry.distance(centroid_point)
+        nearest_idx = distances.idxmin()
+        nearest_line = network.geometry.loc[nearest_idx]
+        projected = nearest_line.interpolate(nearest_line.project(centroid_point))
+        centroids.append(projected)
+
+    stations = gpd.GeoDataFrame(geometry=centroids, crs=points.crs)
+    print(f"Generated {len(stations)} artificial stations.")
+    return stations
+
+if stations_path and os.path.exists(stations_path):
+    stations = gpd.read_file(stations_path).to_crs(points.crs)
+else:
+    stations = generate_artificial_stations(points, network, eps=cluster_eps_m)
+
+print(f"Loaded {len(points)} points")
+print(f"Loaded {len(stations)} stations")
+print(f"Loaded {len(network)} network elements")
 
 # === SNAP NEARBY ENDPOINTS IN NETWORK ===
 if snap_tolerance_m > 0:
@@ -116,6 +151,33 @@ if snap_tolerance_m > 0:
 
     network["geometry"] = snapped_geoms
     print("Finished snapping network endpoints.")
+
+# === SPLIT NETWORK SEGMENTS AT STATION LOCATIONS IF THEY PASS THROUGH ===
+print("Splitting network lines at stations if they pass through...")
+
+station_buffer = stations.copy()
+station_buffer["geometry"] = station_buffer.buffer(0.5)
+
+new_geoms = []
+
+for line in tqdm(network.geometry, desc="Splitting lines"):
+    intersecting_stations = station_buffer[station_buffer.intersects(line)]
+
+    if intersecting_stations.empty:
+        new_geoms.append(line)
+    else:
+        splitters = intersecting_stations["geometry"].union_all()
+        try:
+            result = split(line, splitters)
+            for segment in result.geoms:
+                if segment.length > 0:
+                    new_geoms.append(segment)
+        except Exception as e:
+            print(f"Warning: could not split line: {e}")
+            new_geoms.append(line)
+
+network = gpd.GeoDataFrame(geometry=new_geoms, crs=points.crs)
+print(f"Finished splitting. Network now has {len(network)} segments.")
 
 # === CENTROID CONVERSION IF NEEDED ===
 if points.geom_type.isin(["Polygon", "MultiPolygon"]).any():
@@ -180,9 +242,9 @@ print("Adding walking edges to 5 nearest neighbors per point...")
 point_kdtree = cKDTree(point_coords)
 
 for i in tqdm(range(len(points)), desc="Point-to-point nearest neighbors"):
-    distances, neighbors = point_kdtree.query(point_coords[i], k=6)  # k=6 to include self
+    distances, neighbors = point_kdtree.query(point_coords[i], k=6)
     p_node_i = f"point_{i}"
-    for neighbor_idx, distance_m in zip(neighbors[1:], distances[1:]):  # skip self
+    for neighbor_idx, distance_m in zip(neighbors[1:], distances[1:]):
         p_node_j = f"point_{neighbor_idx}"
         time_min = (distance_m / 1000) / walking_speed_kmh * 60
         G_aug.add_edge(p_node_i, p_node_j, weight=time_min)
