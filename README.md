@@ -132,7 +132,7 @@ The graph below illustrates how the toolkit establishes connectivity. The small 
 
 ![Graph Illustration](Graph-Illustration.png)
 
-
+![Graph Illustration](Graph-Illustration-noStations.png)
 
 ---
 
