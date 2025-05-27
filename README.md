@@ -131,7 +131,6 @@ The graph below illustrates how the toolkit establishes connectivity. The small 
 
 
 
-
 ---
 
 *Developed for quick and practical applications in spatial analysis and urban transport research.*
