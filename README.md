@@ -5,11 +5,11 @@ Toolkit for computing simple public transit travel time matrices
 
 # About
 
-This repository provides a ready-to-use `Python` toolkit for computing simple **public transport travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only three input shapefiles:
+This repository provides a ready-to-use `Python` toolkit for computing simple **public transport travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only two input shapefiles:
 
 1. **Points** to be connected (e.g. centroids of spatial units),
-2. **Public transport stations** (e.g. subway stops), and
-3. **Network geometry** (e.g. subway lines).
+2. **Network geometry** (e.g. subway lines). and, 
+3. optionally, **Public transport stations** (e.g. subway stops)
 
 ## Key Features
 
