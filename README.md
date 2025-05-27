@@ -9,7 +9,9 @@ This repository provides a ready-to-use `Python` toolkit for computing simple **
 
 1. **Points** to be connected (e.g. centroids of spatial units),
 2. **Network geometry** (e.g. highways, subway lines). and, 
-3. optionally, **public transport stations** (e.g. subway stops)
+3. optionally, **public transport stations** (e.g. subway stops, highway ramps)
+
+The third input is an option since the toolkit can generate artificial entry/exit points to the network. Of course, the recommended option is to provide the input for a more realistic approximation of travel times.
 
 ## Key Features
 
@@ -42,7 +44,7 @@ snap_tolerance_m = 1.0                              # Tolerance for snapping net
 output_matrix_file = "TTMATRIX-noSt.csv"            # Output travel time matrix CSV
 output_shapefile = "ATT-noSt.shp"                   # Output shapefile with average travel times
 output_edges_shapefile = "graph_edges-noSt.shp"     # Output shapefile showing the graph (network + walking) used in Dijkstra
-# --- Only relevant if no station shapefile is progided ---
+# --- Only relevant if no station shapefile is provided ---
 cluster_eps_m = 200                                 # Max distance between points in a cluster for artificial stations (meters)
 # --- Optional for debugging ---
 debug_limit_points = None                           # Set to e.g. 1000 to limit to first N points for testing
@@ -50,6 +52,7 @@ debug_limit_points = None                           # Set to e.g. 1000 to limit 
 
 ### Things to note
 
+- The network and walking speed parameters must be adjusted to fit your setting. The chosen parameters roughly correspond to the modeling of subways in many cities. You may use the toolkit to compute travel times for road networks in which case you may wish to set higher speeds, e.g. 100km/h on-network (highways) and 50km/h off-network (normal roads).
 - The input shapefiles can use projection in projected meter units or decimal degrees (WGS1984). But they should all be in the **same projection**.
 - The algorithm does not distinguish between lines on a network. It is assumed that riders can enter and exit the network at any station. If lines are not split at stations this will be done by the algorithm.
 - If two lines cross without being split and snapped at a node, the algorithm will only allow for a change of line if the lines cross at a station. In this case, the algorithm will split and snap the lines. If two lines cross elsewhere (without split and snap), the algorithm will assume that a change of line is not intended.
