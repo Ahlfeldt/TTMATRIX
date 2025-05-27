@@ -134,7 +134,7 @@ The graphs below illustrates how the toolkit establishes connectivity.
 
 ![Graph Illustration](Graph-Illustration.png)
 
-**Without stations provided by the user***: Only the small blue dots (origins/destinations) and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and artificial stations. These are the nodes where may of the edges connecting blue dots to the network intersect. Given the choice of `cluster_eps_m = 200` in the user settings, these artificial stations are more frequent than actual stations. This can be intentional (e.g. if this was a highway network well integrated into local roads or bus services with frequent stops). The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
+**Without stations provided by the user**: Only the small blue dots (origins/destinations) and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and artificial stations. These are the nodes where may of the edges connecting blue dots to the network intersect. Given the choice of `cluster_eps_m = 200` in the user settings, these artificial stations are more frequent than actual stations. This can be intentional (e.g. if this was a highway network well integrated into local roads or bus services with frequent stops). The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
 
 
 ![Graph Illustration](Graph-Illustration-noStations.png)
