@@ -106,7 +106,7 @@ time = (Euclidean distance in km) / (walking speed in km/h) × 60
 
 ### Artificial Station Generation (when stations are not provided)
 
-If no station shapefile is provided, the toolkit intelligently generates artificial station nodes based on the spatial distribution of the origin/destination points. This ensures a meaningful multimodal routing setup even in the absence of observed stations—particularly useful for scenarios such as modeling highway networks or potential infrastructure planning.
+If no station shapefile is provided, the toolkit generates artificial station nodes based on the spatial distribution of the origin/destination points. This ensures a meaningful multimodal routing setup even in the absence of observed stations—particularly useful for scenarios such as modeling highway networks or potential infrastructure planning.
 
 The generation follows these steps:
 
