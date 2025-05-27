@@ -101,6 +101,28 @@ time = (Euclidean distance in km) / (walking speed in km/h) × 60
 - A shapefile enriched with each point’s **mean travel time**
 - An optional map visualization of accessibility patterns
 
+### Artificial Station Generation (when stations are not provided)
+
+If no station shapefile is provided, the toolkit intelligently generates artificial station nodes based on the spatial distribution of the origin/destination points. This ensures a meaningful multimodal routing setup even in the absence of observed stations—particularly useful for scenarios such as modeling highway networks or potential infrastructure planning.
+
+The generation follows these steps:
+
+1. **Clustering of Points**:
+   - All input points are clustered using the `DBSCAN` algorithm from `scikit-learn`.
+   - The clustering uses Euclidean distance with a maximum radius of `cluster_eps_m` meters to define neighborhood groups.
+   - Each cluster represents a potential service area for an artificial station.
+
+2. **Station Placement**:
+   - For each cluster, the geometric mean of the point coordinates is calculated to determine the cluster centroid.
+   - This centroid is then snapped to the nearest position on the network using projection/interpolation to ensure all stations are connected to the transit graph.
+
+3. **Integration with Network**:
+   - These generated stations are treated identically to real ones:
+     - Connected to the nearest network node with a minimal time cost (virtually free transfer),
+     - Linked to the three nearest points (origin/destination nodes) with walking-time edges.
+
+This method allows the toolkit to maintain consistent logic for multimodal routing, even in the absence of explicitly provided station data, ensuring that travel time matrices remain meaningful in all use cases.
+
 ### Illustration
 
 The graph below illustrates how the toolkit establishes connectivity. The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
