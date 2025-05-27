@@ -5,7 +5,7 @@ Toolkit for computing simple travel time matrices
 
 # About
 
-This repository provides a ready-to-use `Python` toolkit for computing simple **public transport travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only two input shapefiles:
+This repository provides a ready-to-use `Python` toolkit for computing simple **travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only two input shapefiles:
 
 1. **Points** to be connected (e.g. centroids of spatial units),
 2. **Network geometry** (e.g. highways, subway lines). and, 
