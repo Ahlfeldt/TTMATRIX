@@ -35,7 +35,7 @@ You can specify all relevant parameters in the below part of the code. There is 
 # === USER SETTINGS ===
 working_dir = r"H:\Research\TTMATRIX-toolkit"       # Set your working directory
 points_file = "B4m_com_ll.shp"                      # Point shapefile (origins/destinations)
-stations_file = None                                # Set to None or "" to auto-generate stations
+stations_file = "UBahn2020_stops_ll.shp"            # Set to None or "" to auto-generate stations
 network_file = "UBahn2020_lines_ll.shp"             # Network polyline shapefile
 point_id_field = "STAT_BLOCK"                       # Identifier field in point shapefile
 walking_speed_kmh = 4                               # Walking speed (km/h)
