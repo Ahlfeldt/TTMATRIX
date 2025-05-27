@@ -128,9 +128,13 @@ This method allows the toolkit to maintain consistent logic for multimodal routi
 
 ### Illustration
 
-The graph below illustrates how the toolkit establishes connectivity. The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
+The graphs below illustrates how the toolkit establishes connectivity. 
+
+**With stations provided by the user***: The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
 
 ![Graph Illustration](Graph-Illustration.png)
+
+**Without stations provided by the user***:
 
 ![Graph Illustration](Graph-Illustration-noStations.png)
 
