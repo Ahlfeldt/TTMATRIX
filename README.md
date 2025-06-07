@@ -25,6 +25,18 @@ The third input is optional since the toolkit can generate artificial entry/exit
   - Enriched shapefile with mean travel times per point
   - Optional visualization of travel time map
 
+## Requirements
+
+- Python 3.11.7
+- See `requirements.txt` for a list of required packages.
+
+To create a virtual environment and install dependencies:
+
+```bash
+python3.11 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+
 ## Getting Started
 
 If you are **new to Python**, you can download the Anaconda distrbution from [this website](https://www.anaconda.com/download). Open the script `TTMATRIX.py` in Spyder (Scientific Python Development Environment), an open-source integrated development environment (IDE) specifically designed for scientific computing and data analysis using Python. Of course, you can also use any other IDE. When executing `TTMATRIX.py` all dependencies are installed automatically if missing. The script can be copied and run from any folder on your machine. The chosen directory must contain a subfolder **Input** containing the three input shapefiles and a subfolder **Outputs** where the outputs will be saved. 
