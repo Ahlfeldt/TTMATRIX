@@ -28,16 +28,7 @@ The third input is optional since the toolkit can generate artificial entry/exit
 ## Requirements
 
 - Python 3.11.7
-- See `requirements.txt` for a list of required packages.
-
-To create a virtual environment and install dependencies:
-
-```bash
-python3.11 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
-```markdown
-![Python 3.11.7](https://img.shields.io/badge/python-3.11.7-blue.svg)
+- See `requirements.txt` for a list of required packages (they will be installed automatically).
 
 ## Getting Started
 
