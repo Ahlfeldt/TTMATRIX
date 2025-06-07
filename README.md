@@ -1,29 +1,34 @@
 # TTMATRIX 
-Toolkit for computing simple public transit travel time matrices
+Toolkit for computing simple travel time matrices
 
 (c) Gabriel M. Ahlfeldt, version 0.1.0., 2025-05
 
 # About
 
-This repository provides a ready-to-use `Python` toolkit for computing simple **public transport travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only two input shapefiles:
+This repository provides a ready-to-use `Python` toolkit for computing simple **travel time matrices**. It is designed to be **fast**, **convenient**, and **minimalist**, requiring only two input shapefiles:
 
 1. **Points** to be connected (e.g. centroids of spatial units),
 2. **Network geometry** (e.g. highways, subway lines). and, 
 3. optionally, **public transport stations** (e.g. subway stops, highway ramps)
 
-The third input is an option since the toolkit can generate artificial entry/exit points to the network. Of course, the recommended option is to provide the input for a more realistic approximation of travel times.
+The third input is optional since the toolkit can generate artificial entry/exit points to the network. Of course, the recommended option is to provide the input for a more realistic approximation of travel times.
 
 ## Key Features
 
 - **Customizable speeds**: Choose walking and transit speeds (e.g. 4 km/h and 35 km/h).
 - **Smart routing**: Computes least-time routes for all origin-destination pairs, using the network **only if faster** than walking.
 - **Flexible station choice**: No fixed assignment to nearest station — the toolkit chooses the most time-efficient entry and exit.
-- **Automated station generation**: If no stations are provided, the toolkit generates artificial entry-exit points
+- **Optional automated station generation**: If no stations are provided, the toolkit generates artificial entry-exit points
 - **Automatic snapping and connections**: Stations are snapped to the network, endpoints of network segments are snapped to each other, and all points are connected to nearest stations automatically.
 - **Output**: 
   - Travel time matrix (`.csv`) where travel times are measured in minutes
   - Enriched shapefile with mean travel times per point
   - Optional visualization of travel time map
+
+## Requirements
+
+- Python 3.11.7
+- See `requirements.txt` for a list of required packages (they will be installed automatically).
 
 ## Getting Started
 
@@ -35,7 +40,7 @@ You can specify all relevant parameters in the below part of the code. There is 
 # === USER SETTINGS ===
 working_dir = r"H:\Research\TTMATRIX-toolkit"       # Set your working directory
 points_file = "B4m_com_ll.shp"                      # Point shapefile (origins/destinations)
-stations_file = None                                # Set to None or "" to auto-generate stations
+stations_file = "UBahn2020_stops_ll.shp"            # Set to None or "" to auto-generate stations
 network_file = "UBahn2020_lines_ll.shp"             # Network polyline shapefile
 point_id_field = "STAT_BLOCK"                       # Identifier field in point shapefile
 walking_speed_kmh = 4                               # Walking speed (km/h)
@@ -128,11 +133,16 @@ This method allows the toolkit to maintain consistent logic for multimodal routi
 
 ### Illustration
 
-The graph below illustrates how the toolkit establishes connectivity. The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
+The graphs below illustrates how the toolkit establishes connectivity. 
+
+**With stations provided by the user***: The small blue dots (origins/destinations), large red dots (stations), and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and stations. The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
 
 ![Graph Illustration](Graph-Illustration.png)
 
+**Without stations provided by the user**: Only the small blue dots (origins/destinations) and red lines are the inputs provided by the user. The grey lines are created by the toolkit to generate connectivity between locations and locations as well as locations and artificial stations. These are the nodes where may of the edges connecting blue dots to the network intersect. Given the choice of `cluster_eps_m = 200` in the user settings, these artificial stations are more frequent than actual stations. This can be intentional (e.g. if this was a highway network well integrated into local roads or bus services with frequent stops). The fastest route between two blue dots is found through the combined network created by the thick red lines and the thin grey lines. 
 
+
+![Graph Illustration](Graph-Illustration-noStations.png)
 
 ---
 
