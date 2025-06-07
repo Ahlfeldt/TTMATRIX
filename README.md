@@ -36,6 +36,8 @@ To create a virtual environment and install dependencies:
 python3.11 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+```markdown
+![Python 3.11.7](https://img.shields.io/badge/python-3.11.7-blue.svg)
 
 ## Getting Started
 
